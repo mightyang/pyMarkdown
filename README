@@ -1,0 +1,16 @@
+use python's markdown module to parse *.md/*.markdown file, and show it in pyside's qwebview widget by setHtml() function real time.
+
+use WriteHtml xx/xx.html command to write html file.
+use WriteImg xx/xx.jpg/png command to write image file.
+
+add python markdown's table extesion.
+
+you can create table like this:
+
+ xxxx | xxxx | xxxx
+ -----|:----:|:-----
+ aaaaa|aaaaaa|aaaaaa
+
+:-----: center align
+:------ left align
+------: right align
