@@ -1,3 +1,9 @@
+write by python 2.7
+
+install PySide and markdown module:
+pip install PySide
+pip install markdown
+
 use python's markdown module to parse *.md/*.markdown file, and show it in pyside's qwebview widget by setHtml() function real time.
 
 use WriteHtml xx/xx.html command to write html file.
