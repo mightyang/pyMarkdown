@@ -4,6 +4,11 @@ install PySide and markdown module:
 pip install PySide
 pip install markdown
 
+2016/6/9
+extract addName pyMarkdown extension codes to addName.py file
+plan to write an flowchart extension for pyMarkdown
+
+2016/5/30
 use python's markdown module to parse *.md/*.markdown file, and show it in pyside's qwebview widget by setHtml() function real time.
 
 use WriteHtml xx/xx.html command to write html file.
