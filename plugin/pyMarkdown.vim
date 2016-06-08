@@ -4,6 +4,8 @@ import vim, markdown, sys, time, re, logging, os, base64
 from PySide import QtGui, QtCore, QtWebKit
 from threading import Thread
 from markdown.util import etree
+import addName
+import flowChart
 
 logging.basicConfig(level=logging.ERROR,
                     format="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s",
@@ -12,63 +14,8 @@ logging.basicConfig(level=logging.ERROR,
 
 logging.debug( "="*10 )
 
-idList = []
-
-class addIDPreprocessor(markdown.preprocessors.Preprocessor):
-    def run(self, lines):
-        return lines
-
-class addIDTreeprocessor(markdown.treeprocessors.Treeprocessor):
-    def run(self, doc):
-        for elem in doc:
-            self.setId(elem)
-    def setId(self, elem, parent=None):
-        global idList
-        pattern = r"id(\d+)$"
-        if elem.text:
-            result = re.findall(pattern, elem.text, re.S|re.M)
-            if result:
-                elem.text = re.sub(r"id\d+$", "", elem.text, flags=re.S|re.M)
-                anchor = etree.Element("a", {"name":result[0]})
-                elem.insert(0, anchor)
-                anchor.tail = elem.text
-                elem.text = ""
-                idList.append(result[0])
-        if elem.tail:
-            result = re.findall(pattern, elem.tail, re.S|re.M)
-            if result:
-                elem.tail = re.sub(r"id\d+$", "", elem.tail, flags=re.S|re.M)
-                anchor = etree.Element("a", {"name":result[0]})
-                parent.insert(0, anchor)
-                anchor.tail = parent.text
-                parent.text = ""
-                idList.append(result[0])
-        if elem.tag == "img":
-            if QtCore.QDir(elem.attrib["src"]).isRelative():
-                elem.attrib["src"] = QtCore.QDir.currentPath()+"/"+elem.attrib["src"]
-        if len(list(elem))>0:
-            for child in list(elem):
-                self.setId(child, elem)
-
-class addIDPostprocessor(markdown.postprocessors.Postprocessor):
-    def run(self, text):
-        return text
-
-class addIDExtension(markdown.extensions.Extension):
-    def __init__(self, configs={}):
-        self.config = configs
-    def extendMarkdown(self, md, md_globals):
-        md.registerExtension(self)
-        addIDPro = addIDPreprocessor()
-        md.preprocessors.add("addIDPro", addIDPro, "<normalize_whitespace")
-        addIDTree = addIDTreeprocessor()
-        md.treeprocessors.add("addIDTree", addIDTree, "<prettify")
-        addIDPost = addIDPostprocessor()
-        md.postprocessors.add("addIDPost", addIDPost, ">unescape")
-
 class pyMarkdownBrowserWidget(QtWebKit.QWebView):
     def __init__ (self, parent=None):
-        global idList
         logging.debug("initialize browser")
         QtWebKit.QWebView.__init__(self, parent)
         #self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
@@ -163,20 +110,19 @@ class pyMarkdownBrowserWidget(QtWebKit.QWebView):
             return False
 
     def refreshHtml(self):
-        global idList
         logging.debug("refresh html")
         newbf = []
-        idList = []
+        addName.idList = []
         for i in range(len(vim.current.buffer)):
             if vim.current.buffer[i].strip()!="":
                 if not self.isH(vim.current.buffer[i]):
-                    newbf.append(vim.current.buffer[i] + "id%d"%(i+1))
+                    newbf.append(vim.current.buffer[i] + "name%d"%(i+1))
                 else:
                     newbf.append(vim.current.buffer[i])
             else:
                 newbf.append(vim.current.buffer[i])
         self.bf = unicode("\n".join(newbf), "utf8")
-        self.html = markdown.markdown(self.bf, extensions=["markdown.extensions.tables", addIDExtension({})])
+        self.html = markdown.markdown(self.bf, extensions=["markdown.extensions.tables", addName.addNameExtension({})])
         self.html = u'<html>\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>\n</head>\n<body>\n' + self.html
         self.html += u'\n<br>'*100
         self.html += u'</body>\n</html>'
@@ -233,12 +179,12 @@ class pyMarkdownBrowserWidget(QtWebKit.QWebView):
         minusCp = addCp
         for i in range(50):
             if addMode:
-                if str(addCp) in idList:
+                if str(addCp) in addName.idList:
                     return str(addCp)
                 else:
                     addCp += 1
             else:
-                if str(minusCp) in idList:
+                if str(minusCp) in addName.idList:
                     return str(minusCp)
                 else:
                     minusCp -= 1
