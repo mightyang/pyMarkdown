@@ -1,26 +1,25 @@
-write by python 2.7
+python 2.7
 
-install PySide and markdown module:
+安装python的 PySide 和 markdown 模块：
 pip install PySide
 pip install markdown
 
 2016/6/9
-extract addName pyMarkdown extension codes to addName.py file
+将 addName 代码块单独写成 addName.py 文件，方便管理。
 
 2016/5/30
-use python's markdown module to parse *.md/*.markdown file, and show it in pyside's qwebview widget by setHtml() function real time.
+使用 python 的 markdown 模块来解析 md/markdown 文件，并通过 pyside 的 qwebview 部件的 setHtml() 函数实时显示。
 
-use WriteHtml xx.html command to write html file.
-use WriteImg xx.jpg/png command to write image file.
+使用 writeHtml xx.html 命令将 markdown 内容输出为 html 文件。
+使用 writeImg xx.jpg/png 命令将 markdown 内容输出为图片。
 
-add python markdown's table extesion.
-
-you can create table like this:
+启用 python markdown 模块的表格功能
+创建方式如下：
 
  xxxx | xxxx | xxxx
  -----|:----:|:-----
  aaaaa|aaaaaa|aaaaaa
 
-:-----: center align
-:------ left align
-------: right align
+:-----: 居中
+:------ 左对齐
+------: 右对齐
