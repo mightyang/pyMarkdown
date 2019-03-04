@@ -4,6 +4,9 @@ python 2.7
 pip install PySide
 pip install markdown
 
+2019-03-04
+重新将 addName 代码块合并到 pyMarkdown.py 文件里，单独放置调用报错。
+
 2016/6/9
 将 addName 代码块单独写成 addName.py 文件，方便管理。
 
